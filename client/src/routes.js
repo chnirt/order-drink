@@ -15,8 +15,7 @@ export const routes = [
       {
         label: 'Dashboard',
         path: '/dashboard',
-        // component: 'dashboard',
-        component: 'todaywhooffer'
+        component: 'dashboard'
       },
       {
         label: 'TodayWhoOffer',

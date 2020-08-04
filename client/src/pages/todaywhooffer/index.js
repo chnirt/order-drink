@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { useHistory, useLocation } from 'react-router-dom'
 import Backdrop from '@material-ui/core/Backdrop'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import moment from 'moment'
 
 import Breadcrumb from '../../components/Breadcrumb'
 import { useCustomTheme } from '../../context/useCustomTheme'
@@ -211,7 +212,9 @@ export default function TodayWhoOffer() {
                       </IconButton>
                     }
                     title={element.reason}
-                    subheader={element.createdAt}
+                    subheader={moment(element.createdAt).format(
+                      'HH:mm DD/MM/YYYY'
+                    )}
                   />
                 </Card>
               </Grid>
