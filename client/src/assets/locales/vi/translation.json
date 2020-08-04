@@ -1,0 +1,97 @@
+{
+  "Welcome to React": "Xin chào React và react-i18next",
+  "Language": "Ngôn ngữ",
+  "Mode": "Chế độ",
+  "Dark": "Tối",
+  "Light": "Sáng",
+  "English": "Tiếng Anh",
+  "Vietnamese": "Tiếng Việt",
+  "Register": "Đăng ký",
+  "RegisterPage": "Trang đăng ký",
+  "HomePage": "Trang home",
+  "Hello": "Xin chào",
+  "Logout": "Đăng xuất",
+  "No match for": "Không khớp với",
+  "Back": "Trở về",
+
+  "src": {
+    "components": {
+      "Copyright": {
+        "CopyRight": "Bản quyền"
+      },
+      "Breadcrumb": {
+        "Dashboard": "Bảng điều khiển",
+        "Todaywhooffer": "Hôm nay ai mời",
+        "Order": "Đặt hàng",
+        "Invitation": "Lời mời"
+      }
+    },
+    "layouts": {
+      "Main": {
+        "components": {
+          "Drawer": {
+            "Setting": "Cài đặt",
+            "Theme": "Chủ đề",
+            "DarkMode": "Chế độ nền tối",
+            "Language": "Ngôn ngữ"
+          },
+          "Sidebar": {
+            "components": {
+              "SildebarNav": {
+                "Dashboard": "Bộ điều khiển",
+                "TodayWhoOffer": "Hôm nay ai mời",
+                "Order": "Đặt món",
+                "Invitation": "Lời mời"
+              }
+            }
+          }
+        }
+      }
+    },
+    "pages": {
+      "invitation": {
+        "InvitationList": "Danh sách lời mời",
+        "CreateInvitation": "Tạo lời mời",
+        "UpdateInvitation": "Sửa lời mời",
+        "DeleteInvitation": "Xóa lời mời",
+        "Actions": "Hành động",
+        "Filter": "Lọc",
+        "DHHTGB": "Kéo các tiêu đề ở đây để nhóm theo",
+        "rows": "dòng",
+        "of": "trên",
+        "FirstPage": "Trang đầu",
+        "PreviousPage": "Trang sau",
+        "NextPage": "Trang kế",
+        "LastPage": "Trang cuối",
+        "Search": "Tìm kiếm",
+        "Coupon": "Phiếu",
+        "Reason": "Lý do",
+        "Menu": "Thực đơn",
+        "Public": "Công khai",
+        "Status": "Trạng thái",
+        "NewInvitation": "Lời mời mới",
+        "Cancel": "Hủy bỏ",
+        "Save": "Lưu",
+        "OK": "Đông ý",
+        "AYSYWTDTI": "Bạn có chắc bạn muốn xóa mục này?",
+        "NRTD": "Không có hồ sơ để hiển thị"
+      },
+      "login": {
+        "LoginPage": "Trang đăng nhập",
+        "Username": "Tên người dùng",
+        "Password": "Mật khẩu",
+        "ConfirmPassword": "Xác nhận mật khẩu",
+        "Login": "Đăng nhập",
+        "ForgotPassword": "Quên mật khẩu?",
+        "DHAASU": "Chưa có tài khoản? Đăng ký",
+        "RegisterPage": "Trang đăng ký",
+        "IATTTAC": "Tôi đồng ý với các Điều khoản và Điều kiện",
+        "Register": "Đăng ký",
+        "AHACSI": "Đã có tài khoản? Đăng nhập"
+      },
+      "todaywhooffer": {
+        "Coupon": "Phiếu..."
+      }
+    }
+  }
+}

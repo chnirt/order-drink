@@ -1,0 +1,97 @@
+{
+  "Welcome to React": "Welcome to React and react-i18next",
+  "Language": "Language",
+  "Mode": "Mode",
+  "Dark": "Dark",
+  "Light": "Light",
+  "English": "English",
+  "Vietnamese": "Vietnamese",
+  "Register": "Register",
+  "RegisterPage": "Register Page",
+  "HomePage": "Home Page",
+  "Hello": "Hello",
+  "Logout": "Log out",
+  "No match for": "No match for",
+  "Back": "Back",
+
+  "src": {
+    "components": {
+      "Copyright": {
+        "CopyRight": "Copyright"
+      },
+      "Breadcrumb": {
+        "Dashboard": "Dashboard",
+        "Todaywhooffer": "Today Who Offer",
+        "Order": "Order",
+        "Invitation": "Invatation"
+      }
+    },
+    "layouts": {
+      "Main": {
+        "components": {
+          "Drawer": {
+            "Setting": "Setting",
+            "Theme": "Theme",
+            "DarkMode": "Dark mode",
+            "Language": "Language"
+          },
+          "Sidebar": {
+            "components": {
+              "SildebarNav": {
+                "Dashboard": "Dashboard",
+                "TodayWhoOffer": "Today who offer",
+                "Order": "Order",
+                "Invitation": "Invatation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "pages": {
+      "invitation": {
+        "InvitationList": "Invitation List",
+        "CreateInvitation": "Create Invatation",
+        "UpdateInvitation": "Update Invatation",
+        "DeleteInvitation": "Delete Invatation",
+        "Actions": "Actions",
+        "Filter": "Filter",
+        "DHHTGB": "Drag headers here to group by",
+        "rows": "rows",
+        "of": "of",
+        "FirstPage": "First Page",
+        "PreviousPage": "Previous Page",
+        "NextPage": "Next Page",
+        "LastPage": "Last Page",
+        "Search": "Search",
+        "Coupon": "Coupon",
+        "Reason": "Reason",
+        "Menu": "Menu",
+        "Public": "Public",
+        "Status": "Status",
+        "NewInvitation": "New Invitation",
+        "Cancel": "Cancel",
+        "Save": "Save",
+        "OK": "OK",
+        "AYSYWTDTI": "Are you sure you want to delete this item?",
+        "NRTD": "No records to display"
+      },
+      "login": {
+        "LoginPage": "Login Page",
+        "Username": "Username",
+        "Password": "Password",
+        "ConfirmPassword": "Confirm Password",
+        "Login": "Login",
+        "ForgotPassword": "Forgot Password?",
+        "DHAASU": "Don't have an account? Sign Up",
+        "RegisterPage": "Register Page",
+        "IATTTAC": "I agree to the Terms and Conditions",
+        "Register": "Register",
+        "AHACSI": "Already have an account? Sign in"
+      },
+      "todaywhooffer": {
+        "Coupon": "Coupon..."
+      }
+    }
+  }
+}

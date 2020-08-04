@@ -1,0 +1,66 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+li {
+  display: inline;
+  margin-right: 10px;
+}
+
+.hurray {
+  color: red;
+}
+
+.fade-enter {
+  opacity: 0;
+  z-index: 1;
+}
+
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 250ms ease-in;
+}
+
+:root {
+  /* Set the deafult values */
+  --selected-font-color: var(--dark-font-color);
+  --selected-background-color: var(--dark-background-color);
+  --selected-button-font-color: var(--dark-button-font-color);
+  --selected-button-background-color: var(--dark-button-background-color);
+
+  /* Set the 'light' theme */
+  --light-font-color: #2a2a2a;
+  --light-background-color: #ffffff;
+  --light-button-font-color: #ffffff;
+  --light-button-background-color: #2a2a2a;
+
+  /* Set the 'dark' theme */
+  --dark-font-color: #ffffff;
+  --dark-background-color: #2a2a2a;
+  --dark-button-font-color: #2a2a2a;
+  --dark-button-background-color: #ffffff;
+}
+
+html {
+  color: var(--selected-font-color);
+  background-color: var(--selected-background-color);
+}
+
+a {
+  color: var(--selected-font-color);
+  background-color: var(--selected-background-color);
+  text-decoration: none;
+  outline: none;
+}
+
+button {
+  color: var(--selected-button-font-color);
+  background-color: var(--selected-button-background-color);
+  border: 0;
+  outline: none;
+}
+
+input {
+  outline: none;
+}

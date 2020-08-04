@@ -1,0 +1,6 @@
+{
+	"myprivatekey": "myprivatekey",
+	"mongourl": "mongodb://admin:chnirt1803@ds129926.mlab.com:29926/order-now",
+	"accessTokenKey": "accessTokenSecret",
+	"refreshTokenKey": "refreshTokenSecret"
+}
