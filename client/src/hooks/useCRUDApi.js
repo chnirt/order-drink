@@ -21,14 +21,6 @@ export function useCRUDApi(url, skip, config) {
     setRefreshIndex(refreshIndex + 1)
   }
 
-  // const transformRequestDTO = (data = {}) => {
-  //   data.map(({ isPublic, ...rest }) => ({
-  //     isPublic: !isPublic,
-  //     ...rest
-  //   }))
-  //   return data
-  // }
-
   useEffect(() => {
     let cancelled = false
     if (skip) {
@@ -38,7 +30,8 @@ export function useCRUDApi(url, skip, config) {
       setLoading(true)
       api
         .get('/', {
-          ...config
+          ...config,
+          transformResponse: [(data) => config.responseDTO(JSON.parse(data))]
         })
         .then((r) => {
           if (!cancelled) {
@@ -61,10 +54,21 @@ export function useCRUDApi(url, skip, config) {
     }
   }, [skip, refreshIndex])
 
-  const onPost = (params) => {
+  const onPost = (params, config) => {
     setLoading(true)
     api
-      .post(url, params)
+      .post(url, params, {
+        ...config,
+        transformRequest: [
+          (data, headers) => {
+            // modify data here
+            console.log(data)
+
+            return config.requestDTO(data)
+          },
+          ...api.defaults.transformRequest
+        ]
+      })
       .then((r) => {
         if (r.status === 201) {
           setRefreshIndex(refreshIndex + 1)

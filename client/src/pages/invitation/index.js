@@ -26,7 +26,7 @@ import { useCustomTheme } from '../../context/useCustomTheme'
 import { createInvitationSchema } from '../../validation/createInvitationSchema'
 import { nanoId } from '../../utils/nanoId'
 import { useCRUDApi } from '../../hooks/useCRUDApi'
-import { invitationsResponse } from '../../dto/invitationResponse'
+import { invitationsResponse, invitationRequest } from '../../dto/invitation'
 import { variable } from '../../constants'
 
 const useStyles = makeStyles((theme) => ({
@@ -58,7 +58,7 @@ export default function Invitation(props) {
     onDelete
   } = useCRUDApi(`${variable.url}/invitations`, false, {
     params: { mine: true, sortBy: '-createdAt' },
-    transformResponse: [(data) => invitationsResponse(JSON.parse(data))]
+    responseDTO: invitationsResponse
   })
 
   const [action, setAction] = useState(null)
@@ -165,7 +165,7 @@ export default function Invitation(props) {
       coupon: nanoId(),
       reason: '',
       menuId: '',
-      isPublic: false
+      public: false
     },
     validationSchema: createInvitationSchema,
     onSubmit: async (values) => {
@@ -173,7 +173,9 @@ export default function Invitation(props) {
       if (id) {
         onPatch(id, values)
       } else {
-        onPost(values)
+        onPost(values, {
+          requestDTO: invitationRequest
+        })
       }
       onClose()
     }
@@ -245,7 +247,7 @@ export default function Invitation(props) {
                 setFieldValue('coupon', invitation.coupon)
                 setFieldValue('reason', invitation.reason)
                 setFieldValue('menuId', invitation.menuId)
-                setFieldValue('isPublic', invitation.isPublic)
+                setFieldValue('public', invitation.public)
                 setId(rowData.id)
                 onOpen('update')
               }
@@ -464,9 +466,7 @@ export default function Invitation(props) {
               margin="normal"
               fullWidth
               required
-              error={
-                errors.isPublic && touched.isPublic ? errors.isPublic : false
-              }
+              error={errors.public && touched.public ? errors.public : false}
               component="fieldset"
             >
               <FormControlLabel
@@ -474,16 +474,16 @@ export default function Invitation(props) {
                   <Checkbox
                     value="allowExtraEmails"
                     color="primary"
-                    checked={values.isPublic}
+                    checked={values.public}
                     onChange={() => {
-                      setFieldValue('isPublic', !values.isPublic)
+                      setFieldValue('public', !values.public)
                     }}
                   />
                 }
                 label={t(`${breadcrumb}.Public`)}
               />
-              {errors.isPublic && touched.isPublic ? (
-                <FormHelperText>{errors.isPublic}</FormHelperText>
+              {errors.public && touched.public ? (
+                <FormHelperText>{errors.public}</FormHelperText>
               ) : (
                 false
               )}

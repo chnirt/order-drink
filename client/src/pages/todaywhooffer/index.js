@@ -24,7 +24,7 @@ import { useCustomTheme } from '../../context/useCustomTheme'
 import { formatNameWithMaterial } from '../../utils/firstCharacterOfEachString'
 import { useCRUDApi } from '../../hooks/useCRUDApi'
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter'
-import { invitationsResponse } from '../../dto/invitationResponse'
+import { invitationsResponse } from '../../dto/invitation'
 import { variable } from '../../constants'
 
 const useStyles = makeStyles((theme) => ({
@@ -102,7 +102,7 @@ export default function TodayWhoOffer() {
     // onDelete
   } = useCRUDApi(`${variable.url}/invitations`, null, {
     params: { isPublic: true, sortBy: '-createdAt' },
-    transformResponse: [(data) => invitationsResponse(JSON.parse(data))]
+    responseDTO: invitationsResponse
   })
 
   // const listoffer = [
