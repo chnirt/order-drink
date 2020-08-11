@@ -45,7 +45,8 @@ const swaggerDefinition = {
 			}
 		}
 	],
-	schemes: ['https', 'http'],
+	// schemes: ['https', 'http'],
+	schemes: ['http', 'https'],
 	consumes: ['application/json'],
 	produces: ['application/json'],
 	securityDefinitions: {
@@ -55,7 +56,7 @@ const swaggerDefinition = {
 			in: 'header',
 			description:
 				'Enter your bearer token in the format **Bearer &lt;token>**',
-			example: 'Bearer adsdsadas'
+			example: 'Bearer xxx'
 		}
 	},
 	externalDocs: {

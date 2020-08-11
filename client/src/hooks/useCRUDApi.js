@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const cache = {}
+
 export function useCRUDApi(url, skip, config) {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
@@ -18,6 +20,7 @@ export function useCRUDApi(url, skip, config) {
   })
 
   const refresh = () => {
+    delete cache[url]
     setRefreshIndex(refreshIndex + 1)
   }
 
@@ -27,27 +30,41 @@ export function useCRUDApi(url, skip, config) {
       setData(null)
       setLoading(false)
     } else {
-      setLoading(true)
-      api
-        .get('/', {
-          ...config,
-          transformResponse: [(data) => config.responseDTO(JSON.parse(data))]
-        })
-        .then((r) => {
-          if (!cancelled) {
-            // console.log(r.data)
-            setData(r.data)
-            setLoading(false)
-          }
-        })
-        .catch((error) => {
+      const fetchDate = async () => {
+        setLoading(true)
+        console.log('Asd', cache[url])
+        if (cache[url]) {
+          const data = cache[url]
+          setData(data)
           setLoading(false)
-          if (error.response) {
-            setError(error.response?.data)
-          } else {
-            setError(error.message)
-          }
-        })
+        } else {
+          api
+            .get('/', {
+              ...config,
+              transformResponse: [
+                (data) => config.responseDTO(JSON.parse(data))
+              ]
+            })
+            .then((r) => {
+              if (!cancelled) {
+                // console.log(r.data)
+                cache[url] = r.data // set response in cache;
+                setData(r.data)
+                setLoading(false)
+              }
+            })
+            .catch((error) => {
+              setLoading(false)
+              if (error.response) {
+                setError(error.response?.data)
+              } else {
+                setError(error.message)
+              }
+            })
+        }
+      }
+
+      fetchDate()
     }
     return () => {
       cancelled = true
@@ -62,8 +79,6 @@ export function useCRUDApi(url, skip, config) {
         transformRequest: [
           (data, headers) => {
             // modify data here
-            console.log(data)
-
             return config.requestDTO(data)
           },
           ...api.defaults.transformRequest
@@ -71,7 +86,7 @@ export function useCRUDApi(url, skip, config) {
       })
       .then((r) => {
         if (r.status === 201) {
-          setRefreshIndex(refreshIndex + 1)
+          refresh()
         }
       })
       .catch((error) => {
@@ -108,7 +123,7 @@ export function useCRUDApi(url, skip, config) {
       .put(`/${id}`, params)
       .then((r) => {
         if (r.status === 200) {
-          setRefreshIndex(refreshIndex + 1)
+          refresh()
         }
       })
       .catch((error) => {
@@ -127,7 +142,7 @@ export function useCRUDApi(url, skip, config) {
       .patch(`/${id}`, params)
       .then((r) => {
         if (r.status === 200) {
-          setRefreshIndex(refreshIndex + 1)
+          refresh()
         }
       })
       .catch((error) => {
@@ -146,7 +161,7 @@ export function useCRUDApi(url, skip, config) {
       .delete(`/${id}`)
       .then((r) => {
         if (r.status === 200) {
-          setRefreshIndex(refreshIndex + 1)
+          refresh()
         }
       })
       .catch((error) => {
