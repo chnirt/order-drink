@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { useParams, useLocation } from 'react-router-dom'
 import {
@@ -16,6 +16,9 @@ import {
 } from '@material-ui/core'
 import LocalBarOutlinedIcon from '@material-ui/icons/LocalBarOutlined'
 import axios from 'axios'
+import Backdrop from '@material-ui/core/Backdrop'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import socket from 'socket.io-client'
 
 import { variable } from '../../constants'
 import Breadcrumb from '../../components/Breadcrumb'
@@ -35,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
   ul: {
     backgroundColor: 'inherit',
     padding: 0
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
   }
 }))
 
@@ -46,8 +53,49 @@ export default function Order() {
   const [brandName, setBrandName] = useState('')
   const [menu, setMenu] = useState([])
   const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(false)
+  const socketRef = useRef()
 
   const token = localStorage.getItem('access-token')
+
+  useEffect(() => {
+    let isCancelled = false
+
+    const runAsync = async () => {
+      try {
+        if (!isCancelled) {
+          socketRef.current = socket.connect(variable.url)
+
+          socketRef.current.emit('joined room', invitationId)
+
+          // socketRef.current.on('allMessages', (data) => {
+          //   console.log(data)
+          //   setMessages((s) => [...data, ...s])
+          // })
+
+          socketRef.current.on('joined room', (data) => {
+            console.log('joined room:', data)
+          })
+
+          socketRef.current.on('report', (data) => {
+            console.log('report: ', data)
+            const orders = data?.[0].orders
+            setOrders(orders)
+          })
+        }
+      } catch (e) {
+        if (!isCancelled) {
+          throw e
+        }
+      }
+    }
+
+    runAsync()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     onRequest()
@@ -57,7 +105,8 @@ export default function Order() {
   }, [brandName, pathname, search])
 
   function onRequest() {
-    axios
+    setLoading(true)
+    const promise1 = axios
       .get(`${variable.url}/invitations/${invitationId}/menu`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -70,7 +119,7 @@ export default function Order() {
         setMenu(menu_infos)
       })
       .catch((err) => console.log(err))
-    axios
+    const promise2 = axios
       .get(`${variable.url}/invitations/${invitationId}/report`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -81,6 +130,9 @@ export default function Order() {
         setOrders(orders)
       })
       .catch((err) => console.log(err))
+    Promise.all([promise1, promise2]).then((values) => {
+      setLoading(false)
+    })
   }
 
   function onCart(name) {
@@ -99,7 +151,10 @@ export default function Order() {
         }
       )
       .then((res) => {
-        // console.log('order', res.data)
+        socketRef.current.emit('sendCart', {
+          roomId: invitationId,
+          data: name
+        })
       })
       .catch((err) => console.log(err))
   }
@@ -183,6 +238,9 @@ export default function Order() {
           </Grid>
         </Grid>
       </div>
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   )
 }

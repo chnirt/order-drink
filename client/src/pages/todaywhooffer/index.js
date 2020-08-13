@@ -81,6 +81,10 @@ const useStyles = makeStyles((theme) => ({
     width: 100,
     height: 100
     // paddingTop: '56.25%', // 16:9
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
   }
 }))
 

@@ -108,7 +108,6 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.orders.map((orderRow, i) => {
-                    console.log(orderRow)
                     return (
                       <TableRow key={i}>
                         <TableCell component="th" scope="row">

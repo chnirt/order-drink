@@ -1,4 +1,6 @@
-const express = require('express')
+const app = require('express')()
+const http = require('http').createServer(app)
+const io = require('socket.io')(http)
 const logger = require('morgan')
 // const helmet = require('helmet')
 const cors = require('cors')
@@ -17,7 +19,7 @@ const userRoute = require('./routes/user')
 const invitationRoute = require('./routes/invitation')
 const orderRoute = require('./routes/order')
 
-const app = express()
+const { Invitation } = require('./models')
 
 var conString = process.env.PG_URL //Can be found in the Details page
 var client = new pg.Client(conString)
@@ -76,7 +78,105 @@ mongoose.connection.once('open', () =>
 	console.log(`🌨  Connected successfully to mongodb database`)
 )
 
+let messages = []
+let rooms = [{ id: 1, messages: ['Hello Socket.IO'] }]
+
+// create io
+io.on('connection', (socket) => {
+	console.log('❌ connection')
+	socket.on('joined room', (roomId) => {
+		socket.join(roomId)
+
+		// const foundRooms = rooms.filter((item) => item.id === roomId)
+		// // check existed room
+		// if (foundRooms.length <= 0) {
+		// 	rooms.unshift({
+		// 		id: roomId,
+		// 		messages: [`${socket.id}: joined room`, ...messages]
+		// 	})
+		// } else {
+		// 	const roomIndex = rooms.findIndex((item) => item.id === roomId)
+		// 	rooms[roomIndex].messages = [
+		// 		`${socket.id}: joined room`,
+		// 		...rooms[roomIndex].messages
+		// 	]
+
+		// 	// get all messages in room
+		// 	socket.emit(
+		// 		'allMessages',
+		// 		rooms.filter((item) => item.id === roomId)[0].messages
+		// 	)
+		// }
+
+		// send other members
+		socket.broadcast.to(roomId).emit('joined room', `${socket.id} joined room`)
+	})
+
+	socket.on('sendCart', async ({ roomId, data }) => {
+		// rooms
+		// 	.filter((item) => item.id === roomId)[0]
+		// 	.messages.unshift(`${socket.id}: ${data}`)
+
+		console.log('send', roomId, data)
+
+		const report = await Invitation.aggregate([
+			{
+				$match: { _id: mongoose.Types.ObjectId(roomId) }
+			},
+			{
+				$lookup: {
+					// from: 'orders',
+					// localField: 'orders',
+					// foreignField: '_id',
+					// as: 'orders',
+
+					from: 'orders',
+					let: { orderId: '$orders' },
+					pipeline: [
+						{ $match: { $expr: { $in: ['$_id', '$$orderId'] } } },
+						{
+							$lookup: {
+								from: 'users',
+								localField: 'orderer',
+								foreignField: '_id',
+								as: 'orderer'
+							}
+						},
+						{ $unwind: '$orderer' },
+						{
+							$group: {
+								_id: '$dishId',
+								orders: {
+									$addToSet: '$orderer'
+								},
+								count: { $sum: '$quantity' }
+							}
+						}
+					],
+					as: 'orders'
+				}
+			},
+			{
+				$addFields: {
+					total: { $sum: '$orders.count' }
+				}
+			}
+		])
+
+		// send to members in room
+		io.sockets.to(roomId).emit('report', report)
+	})
+
+	socket.on('disconnect', (reason) => {
+		if (reason === 'io server disconnect') {
+			// the disconnection was initiated by the server, you need to reconnect manually
+			socket.connect()
+		}
+		// else the socket will automatically try to reconnect
+	})
+})
+
 //create a server object:
-app.listen(port, () => {
+http.listen(port, () => {
 	console.log(`👻  Listening on port ${port}`)
 }) //the server object listens on port 8080
