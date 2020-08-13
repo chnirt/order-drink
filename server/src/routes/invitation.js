@@ -660,7 +660,7 @@ router.get('/:invitationId/menu', checkAuth, async (req, res, next) => {
 		const name = invitation.menuId
 		// console.log("123", name);
 		// console.log("456", Object.keys(data));
-		const result = Object.keys(data).find(item => {
+		const result = Object.keys(data).find((item) => {
 			// console.log(name, item, name.includes(item));
 			return name.includes(item)
 		})
@@ -756,6 +756,7 @@ router.get('/:invitationId/report', checkAuth, async (req, res, next) => {
 								as: 'orderer'
 							}
 						},
+						{ $unwind: '$orderer' },
 						{
 							$group: {
 								_id: '$dishId',

@@ -17,10 +17,9 @@ import {
 import LocalBarOutlinedIcon from '@material-ui/icons/LocalBarOutlined'
 import axios from 'axios'
 
+import { variable } from '../../constants'
 import Breadcrumb from '../../components/Breadcrumb'
 import Report from './report'
-
-const url = 'https://yqog5.sse.codesandbox.io/menu'
 
 const useStyles = makeStyles((theme) => ({
   breadcrumb: {
@@ -41,29 +40,66 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Order() {
   const classes = useStyles()
-  let { orderId } = useParams()
+  let { invitationId } = useParams()
   const { pathname, search } = useLocation()
 
   const [brandName, setBrandName] = useState('')
   const [menu, setMenu] = useState([])
-  const queryParams =
-    'https://www.now.vn/ho-chi-minh/phuc-long-cafe-takeaway-crescent-mall'
+  const [orders, setOrders] = useState([])
+
+  const token = localStorage.getItem('access-token')
 
   useEffect(() => {
     onRequest()
     // const currentPath = pathname
     // const searchParams = new URLSearchParams(search)
-    // console.log(orderId, brandName, currentPath, searchParams)
-  }, [orderId, brandName, pathname, search])
+    // console.log( brandName, currentPath, searchParams)
+  }, [brandName, pathname, search])
 
   function onRequest() {
     axios
-      .get(`${url}?url=${queryParams}`)
+      .get(`${variable.url}/invitations/${invitationId}/menu`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       .then((res) => {
         const brand_name = res?.data?.reply?.delivery_detail?.brand?.name
         const menu_infos = res?.data?.reply?.menu_infos
         setBrandName(brand_name)
         setMenu(menu_infos)
+      })
+      .catch((err) => console.log(err))
+    axios
+      .get(`${variable.url}/invitations/${invitationId}/report`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        const orders = res?.data?.[0].orders
+        setOrders(orders)
+      })
+      .catch((err) => console.log(err))
+  }
+
+  function onCart(name) {
+    axios
+      .post(
+        `${variable.url}/orders`,
+        {
+          dishId: name,
+          invitation: invitationId,
+          quantity: 1
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      .then((res) => {
+        // console.log('order', res.data)
       })
       .catch((err) => console.log(err))
   }
@@ -127,7 +163,7 @@ export default function Order() {
                             <IconButton
                               edge="end"
                               aria-label="comments"
-                              // onClick={() => onCart(element?.name)}
+                              onClick={() => onCart(element?.name)}
                             >
                               <LocalBarOutlinedIcon />
                             </IconButton>
@@ -142,7 +178,7 @@ export default function Order() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <Paper className={classes.paper}>
-              <Report />
+              <Report orders={orders} />
             </Paper>
           </Grid>
         </Grid>

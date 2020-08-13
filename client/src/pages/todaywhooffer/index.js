@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import {
   Grid,
@@ -18,14 +18,15 @@ import { useHistory, useLocation } from 'react-router-dom'
 import Backdrop from '@material-ui/core/Backdrop'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import moment from 'moment'
+import axios from 'axios'
 
 import Breadcrumb from '../../components/Breadcrumb'
 import { useCustomTheme } from '../../context/useCustomTheme'
 import { formatNameWithMaterial } from '../../utils/firstCharacterOfEachString'
-import { useCRUDApi } from '../../hooks/useCRUDApi'
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter'
 import { invitationsResponse } from '../../dto/invitation'
 import { variable } from '../../constants'
+import { useCRUDApi } from '../../hooks/useCRUDApi'
 
 const useStyles = makeStyles((theme) => ({
   breadcrumb: {
@@ -83,6 +84,44 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+// const listoffer = [
+//   {
+//     coupon: 'ZHW2O9',
+//     name: 'S1',
+//     reason: 'Lanh luong',
+//     status: 'unpublish',
+//     image:
+//       'https://cafefcdn.com/thumb_w/650/2019/7/7/phuc-long-mo-2-chi-nhanh-o-hang-dieu-va-vincom-lam-fan-ha-noi-dung-ngoi-khong-yen-b488c401636887600391620970-1562468064186162036512-crop-15625496664651414098330.jpg',
+//     avatar:
+//       'https://gamek.mediacdn.vn/k:2015/11-1441712323241/hot-girl-thich-choi-dota-2-gay-sot-cong-dong-game-thu-viet.jpg'
+//   },
+//   {
+//     coupon: 'ZHW123',
+//     name: 'S2',
+//     reason: 'Hu roi',
+//     status: 'locked',
+//     image:
+//       'https://cafefcdn.com/thumb_w/650/2019/7/7/phuc-long-mo-2-chi-nhanh-o-hang-dieu-va-vincom-lam-fan-ha-noi-dung-ngoi-khong-yen-b488c401636887600391620970-1562468064186162036512-crop-15625496664651414098330.jpg',
+//     avatar: 'https://file.tinnhac.com/resize/600x-/2016/08/03/IU2-ff31.jpg'
+//   },
+//   {
+//     coupon: '10ZH32',
+//     name: 'Trinh Chin Chin Chin',
+//     reason: 'Chin moi nuoc',
+//     status: 'published',
+//     image:
+//       'https://images.foody.vn/res/g97/966583/prof/s1242x600/foody-upload-api-foody-mobile-28168540_15906390443-191009142526.jpg'
+//   },
+//   {
+//     coupon: 'ZMAW1K',
+//     name: 'Trinh Chin Chin Chin',
+//     reason: 'Chin thich moi',
+//     status: 'complete',
+//     image:
+//       'https://images.foody.vn/res/g97/966583/prof/s1242x600/foody-upload-api-foody-mobile-28168540_15906390443-191009142526.jpg'
+//   }
+// ]
+
 const breadcrumb = 'src.pages.todaywhooffer'
 
 export default function TodayWhoOffer() {
@@ -93,55 +132,90 @@ export default function TodayWhoOffer() {
   const { pathname } = useLocation()
   let { push } = useHistory()
 
-  let {
-    data,
-    loading: loadingInvitation
-    // onGet,
-    // onPost,
-    // onPatch,
-    // onDelete
-  } = useCRUDApi(`${variable.url}/invitations`, null, {
-    params: { isPublic: true, sortBy: '-createdAt' },
-    responseDTO: invitationsResponse
-  })
+  let { data, loading: loadingInvitation } = useCRUDApi(
+    `${variable.url}/invitations`,
+    null,
+    {
+      params: { isPublic: true, sortBy: '-createdAt' },
+      responseDTO: invitationsResponse
+    }
+  )
 
-  // const listoffer = [
-  //   {
-  //     coupon: 'ZHW2O9',
-  //     name: 'S1',
-  //     reason: 'Lanh luong',
-  //     status: 'unpublish',
-  //     image:
-  //       'https://cafefcdn.com/thumb_w/650/2019/7/7/phuc-long-mo-2-chi-nhanh-o-hang-dieu-va-vincom-lam-fan-ha-noi-dung-ngoi-khong-yen-b488c401636887600391620970-1562468064186162036512-crop-15625496664651414098330.jpg',
-  //     avatar:
-  //       'https://gamek.mediacdn.vn/k:2015/11-1441712323241/hot-girl-thich-choi-dota-2-gay-sot-cong-dong-game-thu-viet.jpg'
-  //   },
-  //   {
-  //     coupon: 'ZHW123',
-  //     name: 'S2',
-  //     reason: 'Hu roi',
-  //     status: 'locked',
-  //     image:
-  //       'https://cafefcdn.com/thumb_w/650/2019/7/7/phuc-long-mo-2-chi-nhanh-o-hang-dieu-va-vincom-lam-fan-ha-noi-dung-ngoi-khong-yen-b488c401636887600391620970-1562468064186162036512-crop-15625496664651414098330.jpg',
-  //     avatar: 'https://file.tinnhac.com/resize/600x-/2016/08/03/IU2-ff31.jpg'
-  //   },
-  //   {
-  //     coupon: '10ZH32',
-  //     name: 'Trinh Chin Chin Chin',
-  //     reason: 'Chin moi nuoc',
-  //     status: 'published',
-  //     image:
-  //       'https://images.foody.vn/res/g97/966583/prof/s1242x600/foody-upload-api-foody-mobile-28168540_15906390443-191009142526.jpg'
-  //   },
-  //   {
-  //     coupon: 'ZMAW1K',
-  //     name: 'Trinh Chin Chin Chin',
-  //     reason: 'Chin thich moi',
-  //     status: 'complete',
-  //     image:
-  //       'https://images.foody.vn/res/g97/966583/prof/s1242x600/foody-upload-api-foody-mobile-28168540_15906390443-191009142526.jpg'
-  //   }
-  // ]
+  const [loading, setLoading] = useState(false)
+
+  async function handleJoinInvitation(element) {
+    const { id } = element
+    const token = localStorage.getItem('access-token')
+    setLoading(true)
+    try {
+      const response = await axios.post(
+        `${variable.url}/invitations/${id}/join`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      if (response.data) {
+        setLoading(false)
+        push(`/order/${id}`)
+
+        // enqueueSnackbar('Successful', {
+        //   variant: VariantEnum.SUCCESS,
+        //   action: (key) => (
+        //     <IconButton
+        //       type="submit"
+        //       className={classes.iconButton}
+        //       aria-label="search"
+        //       onClick={() => closeSnackbar(key)}
+        //     >
+        //       <CloseIcon style={{ color: '#fff' }} />
+        //     </IconButton>
+        //   )
+        // })
+      }
+
+      return response.data
+    } catch (error) {
+      setLoading(false)
+      // console.log(error)
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        // console.log('Response', error.response.data)
+        // console.log(error.response.status)
+        // console.log(error.response.headers)
+
+        if (error.response.data.message === 'You joined') {
+          push(`/order/${id}`)
+        }
+        // enqueueSnackbar(error.response.data.message, {
+        //   variant: VariantEnum.ERROR,
+        //   action: (key) => (
+        //     <IconButton
+        //       type="submit"
+        //       className={classes.iconButton}
+        //       aria-label="search"
+        //       onClick={() => closeSnackbar(key)}
+        //     >
+        //       <CloseIcon style={{ color: '#fff' }} />
+        //     </IconButton>
+        //   )
+        // })
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        // console.log('Request', error.request)
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        // console.log('Message', error.message)
+      }
+      // console.log('Config', error.config)
+    }
+  }
 
   return (
     <div>
@@ -204,9 +278,7 @@ export default function TodayWhoOffer() {
                             // color: main
                           }
                         }
-                        onClick={() => {
-                          push(`/order/${element.coupon}`)
-                        }}
+                        onClick={() => handleJoinInvitation(element)}
                       >
                         <RoomServiceOutlinedIcon />
                       </IconButton>
@@ -222,7 +294,10 @@ export default function TodayWhoOffer() {
           </Grid>
         </div>
       </div>
-      <Backdrop className={classes.backdrop} open={loadingInvitation}>
+      <Backdrop
+        className={classes.backdrop}
+        open={loadingInvitation || loading}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
     </div>

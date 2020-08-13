@@ -89,40 +89,35 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.name}
         </TableCell>
-        <TableCell align="right">{row.calories}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell>
+        <TableCell align="right">{row._id}</TableCell>
+        <TableCell align="right">{row.count}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h6" gutterBottom component="div">
-                History
+                Detail
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
+                    <TableCell>Orderer</TableCell>
                     <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                      <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {row.orders.map((orderRow, i) => {
+                    console.log(orderRow)
+                    return (
+                      <TableRow key={i}>
+                        <TableCell component="th" scope="row">
+                          {orderRow.username}
+                        </TableCell>
+                        <TableCell align="right">1</TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </Box>
@@ -157,7 +152,7 @@ const useStyles = makeStyles({
   }
 })
 
-export default function CollapsibleTable() {
+export default function CollapsibleTable({ orders }) {
   const classes = useStyles()
 
   return (
@@ -181,11 +176,9 @@ export default function CollapsibleTable() {
           <TableHead>
             <TableRow>
               <TableCell />
-              <TableCell>Dessert (100g serving)</TableCell>
-              <TableCell align="right">Calories</TableCell>
-              <TableCell align="right">Fat&nbsp;(g)</TableCell>
-              <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-              <TableCell align="right">Protein&nbsp;(g)</TableCell>
+              <TableCell></TableCell>
+              <TableCell align="right">Name</TableCell>
+              <TableCell align="right">Amount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -197,15 +190,21 @@ export default function CollapsibleTable() {
                 <TableCell align="right">{ccyFormat(row.price)}</TableCell>
               </TableRow>
             ))} */}
-            {rows.map((row) => (
-              <Row key={row.name} row={row} />
+            {orders.map((order, i) => (
+              <Row key={i} row={order} />
             ))}
 
             <TableRow>
+              <TableCell>Subtotal</TableCell>
+              <TableCell colSpan={2}></TableCell>
+              <TableCell align="right">
+                {orders.reduce((a, b) => a + b.count, 0)}
+              </TableCell>
+            </TableRow>
+
+            {/* <TableRow>
               <TableCell rowSpan={3} />
               <TableCell colSpan={2}>Subtotal</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
               <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
             </TableRow>
             <TableRow>
@@ -214,15 +213,11 @@ export default function CollapsibleTable() {
                 0
               )} %`}</TableCell>
               <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell colSpan={2}>Total</TableCell>
               <TableCell align="right">{ccyFormat(invoiceTotal)}</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
-            </TableRow>
+            </TableRow> */}
           </TableBody>
         </Table>
       </TableContainer>

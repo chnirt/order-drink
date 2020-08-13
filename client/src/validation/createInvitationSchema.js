@@ -6,5 +6,5 @@ export const createInvitationSchema = Yup.object({
     .max(10, 'Coupon must be at most 10 characters'),
   reason: Yup.string().required('Reason is required'),
   menuId: Yup.string().required('Menu is required'),
-  public: Yup.bool()
+  isPublic: Yup.bool()
 })

@@ -103,7 +103,7 @@ export default function Invitation(props) {
     },
     {
       title: t(`${breadcrumb}.Public`),
-      field: 'public'
+      field: 'isPublic'
     }
   ]
 
@@ -165,7 +165,7 @@ export default function Invitation(props) {
       coupon: nanoId(),
       reason: '',
       menuId: '',
-      public: false
+      isPublic: false
     },
     validationSchema: createInvitationSchema,
     onSubmit: async (values) => {
@@ -247,7 +247,7 @@ export default function Invitation(props) {
                 setFieldValue('coupon', invitation.coupon)
                 setFieldValue('reason', invitation.reason)
                 setFieldValue('menuId', invitation.menuId)
-                setFieldValue('public', invitation.public)
+                setFieldValue('isPublic', invitation.isPublic)
                 setId(rowData.id)
                 onOpen('update')
               }
@@ -264,7 +264,7 @@ export default function Invitation(props) {
               }
             })
             // {
-            //   // icon: 'public',
+            //   // icon: 'isPublic',
             //   icon: () => <PublishOutlinedIcon />,
             //   tooltip: 'Publish Invitation',
             //   onClick: (event, rowData) =>
@@ -393,7 +393,7 @@ export default function Invitation(props) {
               label={
                 errors.coupon && touched.coupon
                   ? 'Error Coupon'
-                  : t('src.pages.invitation.Coupon')
+                  : t(`${breadcrumb}.Coupon`)
               }
               error={errors.coupon && touched.coupon ? true : false}
               helperText={
@@ -418,7 +418,7 @@ export default function Invitation(props) {
               label={
                 errors.reason && touched.reason
                   ? 'Error Reason'
-                  : t('src.pages.invitation.Reason')
+                  : t(`${breadcrumb}.Reason`)
               }
               error={errors.reason && touched.reason ? true : false}
               helperText={
@@ -434,15 +434,13 @@ export default function Invitation(props) {
               fullWidth
               error={errors.menuId}
             >
-              <InputLabel id="menu-label">
-                {t('src.pages.invitation.Menu')}
-              </InputLabel>
+              <InputLabel id="menu-label">{t(`${breadcrumb}.Menu`)}</InputLabel>
               <Select
                 labelId="menu-label"
                 id="menu"
                 value={values.menuId}
                 onChange={handleChange}
-                label={t('src.pages.invitation.Menu')}
+                label={t(`${breadcrumb}.Menu`)}
                 inputProps={{
                   name: 'menuId',
                   id: 'menu-label'
@@ -466,7 +464,9 @@ export default function Invitation(props) {
               margin="normal"
               fullWidth
               required
-              error={errors.public && touched.public ? errors.public : false}
+              error={
+                errors.isPublic && touched.isPublic ? errors.isPublic : false
+              }
               component="fieldset"
             >
               <FormControlLabel
@@ -474,16 +474,16 @@ export default function Invitation(props) {
                   <Checkbox
                     value="allowExtraEmails"
                     color="primary"
-                    checked={values.public}
+                    checked={values.isPublic}
                     onChange={() => {
-                      setFieldValue('public', !values.public)
+                      setFieldValue('isPublic', !values.isPublic)
                     }}
                   />
                 }
                 label={t(`${breadcrumb}.Public`)}
               />
-              {errors.public && touched.public ? (
-                <FormHelperText>{errors.public}</FormHelperText>
+              {errors.isPublic && touched.isPublic ? (
+                <FormHelperText>{errors.isPublic}</FormHelperText>
               ) : (
                 false
               )}

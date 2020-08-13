@@ -24,7 +24,7 @@ export const routes = [
       },
       {
         label: 'Order',
-        path: '/order/:orderId',
+        path: '/order/:invitationId',
         component: 'order',
         exact: true
       },

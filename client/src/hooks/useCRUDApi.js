@@ -13,7 +13,7 @@ export function useCRUDApi(url, skip, config) {
 
   const api = axios.create({
     baseURL: url,
-    timeout: 2500,
+    timeout: 5000,
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -32,7 +32,6 @@ export function useCRUDApi(url, skip, config) {
     } else {
       const fetchDate = async () => {
         setLoading(true)
-        console.log('Asd', cache[url])
         if (cache[url]) {
           const data = cache[url]
           setData(data)
@@ -72,6 +71,7 @@ export function useCRUDApi(url, skip, config) {
   }, [skip, refreshIndex])
 
   const onPost = (params, config) => {
+    console.log(':POST:')
     setLoading(true)
     api
       .post(url, params, {
@@ -100,6 +100,7 @@ export function useCRUDApi(url, skip, config) {
   }
 
   const onGet = (id) => {
+    console.log(':GET:')
     setLoading(true)
     return new Promise((resolve, reject) => {
       api
@@ -118,6 +119,7 @@ export function useCRUDApi(url, skip, config) {
   }
 
   const onPut = (id, params) => {
+    console.log(':PUT:')
     setLoading(true)
     api
       .put(`/${id}`, params)
@@ -137,6 +139,7 @@ export function useCRUDApi(url, skip, config) {
   }
 
   const onPatch = (id, params) => {
+    console.log(':PATCH:')
     setLoading(true)
     api
       .patch(`/${id}`, params)
@@ -156,6 +159,7 @@ export function useCRUDApi(url, skip, config) {
   }
 
   const onDelete = (id) => {
+    console.log(':DELETE:')
     setLoading(true)
     api
       .delete(`/${id}`)

@@ -11,7 +11,7 @@ const VariantEnum = {
   INFO: 'info'
 }
 
-const useStyles = makeStyles(theme => ({}))
+const useStyles = makeStyles((theme) => ({}))
 
 export function useApi(url) {
   const classes = useStyles()
@@ -29,13 +29,13 @@ export function useApi(url) {
 
   // declare a request interceptor
   api.interceptors.request.use(
-    config => {
+    (config) => {
       // perform a task before the request is sent
       // console.log('Request was sent')
 
       return config
     },
-    error => {
+    (error) => {
       // handle the error
       return Promise.reject(error)
     }
@@ -43,18 +43,18 @@ export function useApi(url) {
 
   // declare a response interceptor
   api.interceptors.response.use(
-    response => {
+    (response) => {
       // do something with the response data
       // console.log('Response was received')
 
       return response
     },
-    error => {
+    (error) => {
       if (error.code === 'ECONNABORTED') {
         // console.log(`A timeout happend on url ${error.config.url}`)
         enqueueSnackbar('Request timeout', {
           variant: VariantEnum.ERROR,
-          action: key => (
+          action: (key) => (
             <IconButton
               type="submit"
               className={classes.iconButton}
@@ -76,7 +76,7 @@ export function useApi(url) {
       const response = await api.get('/', data)
       enqueueSnackbar('Successful', {
         variant: VariantEnum.SUCCESS,
-        action: key => (
+        action: (key) => (
           <IconButton
             type="submit"
             className={classes.iconButton}
@@ -99,7 +99,7 @@ export function useApi(url) {
 
         enqueueSnackbar(error.response.data.message, {
           variant: VariantEnum.ERROR,
-          action: key => (
+          action: (key) => (
             <IconButton
               type="submit"
               className={classes.iconButton}
@@ -123,12 +123,12 @@ export function useApi(url) {
     }
   }
 
-  const onPost = async data => {
+  const onPost = async (data) => {
     try {
       const response = await api.post(url, data)
       enqueueSnackbar('Successful', {
         variant: VariantEnum.SUCCESS,
-        action: key => (
+        action: (key) => (
           <IconButton
             type="submit"
             className={classes.iconButton}
@@ -151,7 +151,7 @@ export function useApi(url) {
 
         enqueueSnackbar(error.response.data.message, {
           variant: VariantEnum.ERROR,
-          action: key => (
+          action: (key) => (
             <IconButton
               type="submit"
               className={classes.iconButton}
@@ -180,7 +180,7 @@ export function useApi(url) {
       const response = await api.put(`/${id}`, data)
       enqueueSnackbar('Successful', {
         variant: VariantEnum.SUCCESS,
-        action: key => (
+        action: (key) => (
           <IconButton
             type="submit"
             className={classes.iconButton}
@@ -203,7 +203,7 @@ export function useApi(url) {
 
         enqueueSnackbar(error.response.data.message, {
           variant: VariantEnum.ERROR,
-          action: key => (
+          action: (key) => (
             <IconButton
               type="submit"
               className={classes.iconButton}
@@ -227,12 +227,12 @@ export function useApi(url) {
     }
   }
 
-  const onDelete = async id => {
+  const onDelete = async (id) => {
     try {
       const response = await api.delete(`/${id}`)
       enqueueSnackbar('Successful', {
         variant: VariantEnum.SUCCESS,
-        action: key => (
+        action: (key) => (
           <IconButton
             type="submit"
             className={classes.iconButton}
@@ -255,7 +255,7 @@ export function useApi(url) {
 
         enqueueSnackbar(error.response.data.message, {
           variant: VariantEnum.ERROR,
-          action: key => (
+          action: (key) => (
             <IconButton
               type="submit"
               className={classes.iconButton}
