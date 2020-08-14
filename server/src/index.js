@@ -1,4 +1,5 @@
-const app = require('express')()
+const express = require('express')
+const app = express()
 const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 const logger = require('morgan')
@@ -8,6 +9,7 @@ const bodyParser = require('body-parser')
 const compression = require('compression')
 const swaggerUi = require('swagger-ui-express')
 const pg = require('pg')
+const path = require('path')
 
 require('dotenv').config()
 
@@ -62,10 +64,9 @@ app.use('/users', userRoute)
 app.use('/invitations', invitationRoute)
 app.use('/orders', orderRoute)
 
-app.get('/', (req, res) => {
-	// res.send(`Hello <a href='https://${host}${req.url}api-docs/'>Swagger!</a>`)
-	// res.redirect('https://' + host + req.url + 'api-docs/')
-	res.redirect('http://' + host + ':' + port + '/api-docs/')
+app.use(express.static(path.join(__dirname, 'build')))
+app.get('/', function (req, res) {
+	res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
 app.use(notFound)
