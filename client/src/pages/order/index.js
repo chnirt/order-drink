@@ -17,13 +17,13 @@ import {
 import LocalBarOutlinedIcon from '@material-ui/icons/LocalBarOutlined'
 import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined'
 import axios from 'axios'
-import Backdrop from '@material-ui/core/Backdrop'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import socket from 'socket.io-client'
 
 import { variable } from '../../constants'
+import MyBackdrop from '../../components/MyBackdrop'
 import Breadcrumb from '../../components/Breadcrumb'
 import Report from './report'
+import { useApi } from '../../hooks/useApi'
+import { useSocket } from '../../context/useSocket'
 
 const useStyles = makeStyles((theme) => ({
   breadcrumb: {
@@ -50,53 +50,35 @@ export default function Order() {
   const classes = useStyles()
   let { invitationId } = useParams()
   const { pathname, search } = useLocation()
+  const { onPost: orderOnPost } = useApi(`${variable.url}/orders`)
+  const { onDelete: orderOnDelete } = useApi(`${variable.url}/orders`)
+  const { socketEmit, socketOn } = useSocket()
 
   const [brandName, setBrandName] = useState('')
   const [menu, setMenu] = useState([])
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [myOrder, setMyOrder] = useState({})
-  const socketRef = useRef()
 
   const token = localStorage.getItem('access-token')
 
   useEffect(() => {
-    let isCancelled = false
+    socketEmit('joined room', invitationId)
 
-    const runAsync = async () => {
-      try {
-        if (!isCancelled) {
-          socketRef.current = socket.connect(variable.url)
+    // socketOn('allMessages', (data) => {
+    //   console.log(data)
+    //   setMessages((s) => [...data, ...s])
+    // })
 
-          socketRef.current.emit('joined room', invitationId)
+    socketOn('joined room', (data) => {
+      console.log('joined room:', data)
+    })
 
-          // socketRef.current.on('allMessages', (data) => {
-          //   console.log(data)
-          //   setMessages((s) => [...data, ...s])
-          // })
-
-          socketRef.current.on('joined room', (data) => {
-            console.log('joined room:', data)
-          })
-
-          socketRef.current.on('report', (data) => {
-            console.log('report: ', data)
-            const orders = data?.[0].orders
-            setOrders(orders)
-          })
-        }
-      } catch (e) {
-        if (!isCancelled) {
-          throw e
-        }
-      }
-    }
-
-    runAsync()
-
-    return () => {
-      isCancelled = true
-    }
+    socketOn('report', (data) => {
+      console.log('report: ', data)
+      const orders = data?.[0].orders
+      setOrders(orders)
+    })
   }, [])
 
   useEffect(() => {
@@ -146,31 +128,21 @@ export default function Order() {
       .finally(() => setLoading(false))
   }
 
-  function addOrder(name) {
+  async function addOrder(name) {
     setLoading(true)
-    axios
-      .post(
-        `${variable.url}/orders`,
-        {
-          dishId: name,
-          invitation: invitationId,
-          quantity: 1
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-      .then((res) => {
-        setMyOrder(res.data)
-        socketRef.current.emit('sendCart', {
-          roomId: invitationId,
-          data: name
-        })
+    const result = await orderOnPost({
+      dishId: name,
+      invitation: invitationId,
+      quantity: 1
+    })
+    if (result) {
+      setMyOrder(result)
+      socketEmit('addOrder', {
+        roomId: invitationId,
+        data: name
       })
-      .catch((err) => console.log('ERROR:', err))
-      .finally(() => setLoading(false))
+    }
+    setLoading(false)
   }
 
   async function deleteOrder(id) {
@@ -185,28 +157,23 @@ export default function Order() {
     if (response.status === 200 && response.data) {
       const _id = response.data[0]._id
 
-      axios
-        .delete(`${variable.url}/orders/${_id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const result = await orderOnDelete(_id)
+
+      if (result) {
+        setMyOrder({})
+        socketEmit('deleteOrder', {
+          roomId: invitationId,
+          data: id
         })
-        .then((res) => {
-          setMyOrder({})
-          socketRef.current.emit('sendCart', {
-            roomId: invitationId,
-            data: id
-          })
-        })
-        .catch((err) => console.log('ERROR:', err))
-        .finally(() => setLoading(false))
+      }
+      setLoading(false)
     }
   }
 
   return (
     <div>
       <div className={classes.breadcrumb}>
-        <Breadcrumb basename="Dashboard" path={pathname} />
+        <Breadcrumb basename="Dashboard" path={pathname} formatLast={true} />
       </div>
 
       <div className={classes.content}>
@@ -292,9 +259,7 @@ export default function Order() {
           </Grid>
         </Grid>
       </div>
-      <Backdrop className={classes.backdrop} open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <MyBackdrop open={loading} />
     </div>
   )
 }

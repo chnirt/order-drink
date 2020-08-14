@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { CustomThemeProvider } from './context/useCustomTheme'
 import { I18nProvider } from './context/useI18n'
+import { SocketProvider } from './context/useSocket'
 import { AuthProvider } from './context/useAuth'
 import { TodoProvider } from './context/useTodo'
 import Loading from './components/Loading'
@@ -33,11 +34,13 @@ ReactDOM.render(
         <I18nProvider>
           <Suspense fallback={<Loading />}>
             <BrowserRouter basename="/🥤">
-              <AuthProvider>
-                <TodoProvider>
-                  <App />
-                </TodoProvider>
-              </AuthProvider>
+              <SocketProvider>
+                <AuthProvider>
+                  <TodoProvider>
+                    <App />
+                  </TodoProvider>
+                </AuthProvider>
+              </SocketProvider>
             </BrowserRouter>
           </Suspense>
         </I18nProvider>

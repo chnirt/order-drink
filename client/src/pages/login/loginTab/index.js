@@ -78,13 +78,6 @@ export default function LoginTab({ setOpen, handleChangeTabIndex }) {
     }
   })
 
-  // function handleBlur(formikBlur, event) {
-  //   if (!(field.value.length > 0)) {
-  //     onFocus(false)
-  //   }
-  //   formikBlur(event)
-  // }
-
   return (
     <div className={classes.paper}>
       <Avatar

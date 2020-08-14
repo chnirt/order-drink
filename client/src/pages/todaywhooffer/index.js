@@ -15,8 +15,6 @@ import SearchIcon from '@material-ui/icons/Search'
 import RoomServiceOutlinedIcon from '@material-ui/icons/RoomServiceOutlined'
 import { useTranslation } from 'react-i18next'
 import { useHistory, useLocation } from 'react-router-dom'
-import Backdrop from '@material-ui/core/Backdrop'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import moment from 'moment'
 import axios from 'axios'
 
@@ -27,6 +25,7 @@ import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter'
 import { invitationsResponse } from '../../dto/invitation'
 import { variable } from '../../constants'
 import { useCRUDApi } from '../../hooks/useCRUDApi'
+import MyBackdrop from '../../components/MyBackdrop'
 
 const useStyles = makeStyles((theme) => ({
   breadcrumb: {
@@ -298,12 +297,13 @@ export default function TodayWhoOffer() {
           </Grid>
         </div>
       </div>
-      <Backdrop
+      <MyBackdrop open={loadingInvitation || loading} />
+      {/* <Backdrop
         className={classes.backdrop}
         open={loadingInvitation || loading}
       >
         <CircularProgress color="inherit" />
-      </Backdrop>
+      </Backdrop> */}
     </div>
   )
 }

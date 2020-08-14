@@ -6,7 +6,11 @@ import { useTranslation } from 'react-i18next'
 
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter'
 
-export default function BreadCrumbs({ basename = '', path = '' }) {
+export default function BreadCrumbs({
+  basename = '',
+  path = '',
+  formatLast = false
+}) {
   const { t } = useTranslation()
 
   const pathList = `${basename}${path}`.split('/')
@@ -18,7 +22,9 @@ export default function BreadCrumbs({ basename = '', path = '' }) {
         if (i === pathList.length - 1) {
           return (
             <Typography key={i} color="textPrimary">
-              {t(`src.components.Breadcrumb.${capitalize}`)}
+              {formatLast
+                ? capitalize
+                : t(`src.components.Breadcrumb.${capitalize}`)}
             </Typography>
           )
         }

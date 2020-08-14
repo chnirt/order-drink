@@ -11,9 +11,10 @@ const pg = require('pg')
 
 require('dotenv').config()
 
-const { notFound, errorHandler } = require('./middlewares')
+const { notFound, errorHandler, checkAuth } = require('./middlewares')
 const { swaggerSpec, mongoose } = require('./helpers')
 const { port, host } = require('./constants')
+const { verifyToken } = require('./utils')
 
 const userRoute = require('./routes/user')
 const invitationRoute = require('./routes/invitation')
@@ -82,42 +83,82 @@ let messages = []
 let rooms = [{ id: 1, messages: ['Hello Socket.IO'] }]
 
 // create io
-io.on('connection', (socket) => {
+io.use(async (socket, next) => {
+	if (socket.handshake.query && socket.handshake.query.token) {
+		try {
+			const token = socket.handshake.query.token
+
+			const decoded = await verifyToken(token, 'accessToken')
+			socket.decoded = decoded
+			next()
+		} catch (error) {
+			next(new Error('Authentication error'))
+		}
+	} else {
+		next(new Error('Authentication error'))
+	}
+}).on('connection', (socket) => {
 	console.log(`🔗  ${socket.id} connected`)
 	socket.on('joined room', (roomId) => {
 		socket.join(roomId)
-
-		// const foundRooms = rooms.filter((item) => item.id === roomId)
-		// // check existed room
-		// if (foundRooms.length <= 0) {
-		// 	rooms.unshift({
-		// 		id: roomId,
-		// 		messages: [`${socket.id}: joined room`, ...messages]
-		// 	})
-		// } else {
-		// 	const roomIndex = rooms.findIndex((item) => item.id === roomId)
-		// 	rooms[roomIndex].messages = [
-		// 		`${socket.id}: joined room`,
-		// 		...rooms[roomIndex].messages
-		// 	]
-
-		// 	// get all messages in room
-		// 	socket.emit(
-		// 		'allMessages',
-		// 		rooms.filter((item) => item.id === roomId)[0].messages
-		// 	)
-		// }
 
 		// send other members
 		socket.broadcast.to(roomId).emit('joined room', `${socket.id} joined room`)
 	})
 
-	socket.on('sendCart', async ({ roomId, data }) => {
-		// rooms
-		// 	.filter((item) => item.id === roomId)[0]
-		// 	.messages.unshift(`${socket.id}: ${data}`)
+	socket.on('addOrder', async ({ roomId, data }) => {
+		console.log('addOrder', roomId, data)
 
-		console.log('send', roomId, data)
+		const report = await Invitation.aggregate([
+			{
+				$match: { _id: mongoose.Types.ObjectId(roomId) }
+			},
+			{
+				$lookup: {
+					// from: 'orders',
+					// localField: 'orders',
+					// foreignField: '_id',
+					// as: 'orders',
+
+					from: 'orders',
+					let: { orderId: '$orders' },
+					pipeline: [
+						{ $match: { $expr: { $in: ['$_id', '$$orderId'] } } },
+						{
+							$lookup: {
+								from: 'users',
+								localField: 'orderer',
+								foreignField: '_id',
+								as: 'orderer'
+							}
+						},
+						{ $unwind: '$orderer' },
+						{
+							$group: {
+								_id: '$dishId',
+								orders: {
+									$addToSet: '$orderer'
+								},
+								count: { $sum: '$quantity' }
+							}
+						}
+					],
+					as: 'orders'
+				}
+			},
+			{
+				$addFields: {
+					total: { $sum: '$orders.count' }
+				}
+			}
+		])
+
+		// send to members in room
+		io.sockets.to(roomId).emit('report', report)
+	})
+
+	socket.on('deleteOrder', async ({ roomId, data }) => {
+		console.log('deleteOrder', roomId, data)
 
 		const report = await Invitation.aggregate([
 			{
