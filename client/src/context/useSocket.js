@@ -15,10 +15,9 @@ export function SocketProvider({ children }) {
 
 export const useSocket = () => useContext(SocketContext)
 
-const token = localStorage.getItem('access-token')
-
 function SocketValue() {
   const socketRef = useRef()
+  const token = localStorage.getItem('access-token')
 
   useEffect(() => {
     let isCancelled = false

@@ -17,18 +17,16 @@ function AuthValue() {
   const { onPost: loginOnPost } = useApi(`${variable.url}/users/login`)
   const { onPost: registerOnPost } = useApi(`${variable.url}/users/register`)
 
-  const [isAuth, setIsAuth] = useState(
-    !!window.localStorage.getItem('access-token')
-  )
+  const [isAuth, setIsAuth] = useState(!!localStorage.getItem('access-token'))
 
   const login = async (username, password) => {
     const data = await loginOnPost({ username, password })
 
     if (data) {
       const { access_token, refresh_token } = data
-      window.localStorage.setItem('access-token', access_token)
-      window.localStorage.setItem('refresh-token', refresh_token)
-      window.localStorage.setItem('username', username)
+      localStorage.setItem('access-token', access_token)
+      localStorage.setItem('refresh-token', refresh_token)
+      localStorage.setItem('username', username)
       setIsAuth(true)
       return true
     } else {
@@ -47,9 +45,9 @@ function AuthValue() {
   }
 
   const logout = () => {
-    window.localStorage.removeItem('access-token')
-    window.localStorage.removeItem('refresh-token')
-    window.localStorage.removeItem('username')
+    localStorage.removeItem('access-token')
+    localStorage.removeItem('refresh-token')
+    localStorage.removeItem('username')
     setIsAuth(false)
   }
 

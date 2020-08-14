@@ -11,11 +11,11 @@ const CustomThemeContext = createContext()
 
 export function CustomThemeProvider({ children }) {
   const [darkState, setDarkState] = useState(
-    JSON.parse(window.localStorage.getItem('dark')) || false
+    JSON.parse(localStorage.getItem('dark')) || false
   )
   const palletType = darkState ? 'dark' : 'light'
   const [mainColor, setMainColor] = useState(
-    window.localStorage.getItem('mainColor') || 'red'
+    localStorage.getItem('mainColor') || 'red'
   )
 
   const colorList = [
@@ -59,12 +59,12 @@ export function CustomThemeProvider({ children }) {
   }
 
   const toggleDarkMode = () => {
-    window.localStorage.setItem('dark', !darkState)
+    localStorage.setItem('dark', !darkState)
     setDarkState(!darkState)
   }
 
-  const handleMainColor = color => {
-    window.localStorage.setItem('mainColor', color)
+  const handleMainColor = (color) => {
+    localStorage.setItem('mainColor', color)
     setMainColor(color)
   }
 

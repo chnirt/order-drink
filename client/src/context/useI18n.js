@@ -14,17 +14,17 @@ export const useI18n = () => useContext(I18nContext)
 function I18nValue() {
   const { i18n } = useTranslation()
 
-  const changeLanguage = lng => {
+  const changeLanguage = (lng) => {
     i18n.changeLanguage(lng)
-    window.localStorage.setItem('language', lng)
+    localStorage.setItem('language', lng)
   }
 
   useEffect(() => {
-    i18n.changeLanguage(window.localStorage.getItem('language'))
+    i18n.changeLanguage(localStorage.getItem('language'))
   }, [i18n])
 
   return {
-    language: window.localStorage.getItem('language') || i18n.language,
+    language: localStorage.getItem('language') || i18n.language,
     changeLanguage
   }
 }
