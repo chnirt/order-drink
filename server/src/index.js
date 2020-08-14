@@ -75,7 +75,7 @@ mongoose.connection.on('error', () => {
 	console.log('❌  error occurred from the mongodb database')
 })
 mongoose.connection.once('open', () =>
-	console.log(`🌨  Connected successfully to mongodb database`)
+	console.log('🌨  Connected successfully to mongodb database')
 )
 
 let messages = []
@@ -83,7 +83,7 @@ let rooms = [{ id: 1, messages: ['Hello Socket.IO'] }]
 
 // create io
 io.on('connection', (socket) => {
-	console.log('❌ connection')
+	console.log(`🔗  ${socket.id} connected`)
 	socket.on('joined room', (roomId) => {
 		socket.join(roomId)
 

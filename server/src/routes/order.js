@@ -53,6 +53,22 @@ const { Order, User, Invitation } = require('../models')
  *     - application/json
  *     produces:
  *     - application/json
+ *     parameters:
+ *     - in: query
+ *       name: mine
+ *       description: Get order object by mine
+ *       schema:
+ *         type: boolean
+ *     - in: query
+ *       name: sortBy
+ *       description: Get order object by sortBy
+ *       schema:
+ *         type: string
+ *     - in: query
+ *       name: invitationId
+ *       description: Get order object by invitation
+ *       schema:
+ *         type: string
  *     responses:
  *       200:
  *         description: Get orders successful
@@ -67,7 +83,30 @@ const { Order, User, Invitation } = require('../models')
  */
 router.get('/', checkAuth, async (req, res, next) => {
 	try {
-		const orders = await Order.find()
+		const {
+			user: { _id }
+		} = req
+
+		const {
+			query: { mine, sortBy, invitationId }
+		} = req
+
+		const match = {}
+		let sort
+
+		if (mine) {
+			match.orderer = mine ? _id : null
+		}
+
+		if (invitationId) {
+			match.invitation = invitationId
+		}
+
+		if (sortBy) {
+			sort = sortBy
+		}
+
+		const orders = await Order.find({ ...match }).sort(sort)
 		return res.status(200).json(orders)
 	} catch (error) {
 		return res.status(500).json({ message: error })

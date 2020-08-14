@@ -21,7 +21,7 @@ export function useApi(url) {
 
   const api = axios.create({
     baseURL: url,
-    timeout: 2500,
+    timeout: 5000,
     headers: {
       Authorization: `Bearer ${token}`
     }

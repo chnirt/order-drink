@@ -49,17 +49,16 @@ export function useCRUDApi(url, skip, config) {
                 // console.log(r.data)
                 cache[url] = r.data // set response in cache;
                 setData(r.data)
-                setLoading(false)
               }
             })
             .catch((error) => {
-              setLoading(false)
               if (error.response) {
                 setError(error.response?.data)
               } else {
                 setError(error.message)
               }
             })
+            .finally(() => setLoading(false))
         }
       }
 
@@ -71,7 +70,7 @@ export function useCRUDApi(url, skip, config) {
   }, [skip, refreshIndex])
 
   const onPost = (params, config) => {
-    console.log(':POST:')
+    console.log('POST:')
     setLoading(true)
     api
       .post(url, params, {
@@ -90,36 +89,35 @@ export function useCRUDApi(url, skip, config) {
         }
       })
       .catch((error) => {
-        setLoading(false)
         if (error.response) {
           setError(error.response?.data)
         } else {
           setError(error.message)
         }
       })
+      .finally(() => setLoading(false))
   }
 
   const onGet = (id) => {
-    console.log(':GET:')
+    console.log('GET:')
     setLoading(true)
     return new Promise((resolve, reject) => {
       api
         .get(`/${id}`)
         .then((r) => {
           if (r.status === 200) {
-            setLoading(false)
             resolve(r.data)
           }
         })
         .catch((error) => {
-          setLoading(false)
           reject(error.response?.data)
         })
+        .finally(() => setLoading(false))
     })
   }
 
   const onPut = (id, params) => {
-    console.log(':PUT:')
+    console.log('PUT:')
     setLoading(true)
     api
       .put(`/${id}`, params)
@@ -129,17 +127,17 @@ export function useCRUDApi(url, skip, config) {
         }
       })
       .catch((error) => {
-        setLoading(false)
         if (error.response) {
           setError(error.response?.data)
         } else {
           setError(error.message)
         }
       })
+      .finally(() => setLoading(false))
   }
 
   const onPatch = (id, params) => {
-    console.log(':PATCH:')
+    console.log('PATCH:')
     setLoading(true)
     api
       .patch(`/${id}`, params)
@@ -149,17 +147,17 @@ export function useCRUDApi(url, skip, config) {
         }
       })
       .catch((error) => {
-        setLoading(false)
         if (error.response) {
           setError(error.response?.data)
         } else {
           setError(error.message)
         }
       })
+      .finally(() => setLoading(false))
   }
 
   const onDelete = (id) => {
-    console.log(':DELETE:')
+    console.log('DELETE:')
     setLoading(true)
     api
       .delete(`/${id}`)
@@ -169,21 +167,21 @@ export function useCRUDApi(url, skip, config) {
         }
       })
       .catch((error) => {
-        setLoading(false)
         if (error.response) {
           setError(error.response?.data)
         } else {
           setError(error.message)
         }
       })
+      .finally(() => setLoading(false))
   }
 
   return {
     data,
+    setData,
     loading,
     error,
     refresh,
-    setData,
     onGet,
     onPost,
     onPut,

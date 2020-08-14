@@ -15,6 +15,7 @@ import {
   IconButton
 } from '@material-ui/core'
 import LocalBarOutlinedIcon from '@material-ui/icons/LocalBarOutlined'
+import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined'
 import axios from 'axios'
 import Backdrop from '@material-ui/core/Backdrop'
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -54,6 +55,7 @@ export default function Order() {
   const [menu, setMenu] = useState([])
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
+  const [myOrder, setMyOrder] = useState({})
   const socketRef = useRef()
 
   const token = localStorage.getItem('access-token')
@@ -118,7 +120,6 @@ export default function Order() {
         setBrandName(brand_name)
         setMenu(menu_infos)
       })
-      .catch((err) => console.log(err))
     const promise2 = axios
       .get(`${variable.url}/invitations/${invitationId}/report`, {
         headers: {
@@ -129,13 +130,24 @@ export default function Order() {
         const orders = res?.data?.[0].orders
         setOrders(orders)
       })
+    const promise3 = axios
+      .get(`${variable.url}/orders`, {
+        params: { mine: true, invitationId },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        const myOrder = res?.data?.[0]
+        setMyOrder(myOrder)
+      })
+    Promise.all([promise1, promise2, promise3])
       .catch((err) => console.log(err))
-    Promise.all([promise1, promise2]).then((values) => {
-      setLoading(false)
-    })
+      .finally(() => setLoading(false))
   }
 
-  function onCart(name) {
+  function addOrder(name) {
+    setLoading(true)
     axios
       .post(
         `${variable.url}/orders`,
@@ -151,12 +163,44 @@ export default function Order() {
         }
       )
       .then((res) => {
+        setMyOrder(res.data)
         socketRef.current.emit('sendCart', {
           roomId: invitationId,
           data: name
         })
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.log('ERROR:', err))
+      .finally(() => setLoading(false))
+  }
+
+  async function deleteOrder(id) {
+    setLoading(true)
+    const response = await axios.get(`${variable.url}/orders`, {
+      params: { mine: true, invitationId, dishId: id },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    if (response.status === 200 && response.data) {
+      const _id = response.data[0]._id
+
+      axios
+        .delete(`${variable.url}/orders/${_id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        .then((res) => {
+          setMyOrder({})
+          socketRef.current.emit('sendCart', {
+            roomId: invitationId,
+            data: id
+          })
+        })
+        .catch((err) => console.log('ERROR:', err))
+        .finally(() => setLoading(false))
+    }
   }
 
   return (
@@ -215,13 +259,23 @@ export default function Order() {
                             }
                           />
                           <ListItemSecondaryAction>
-                            <IconButton
-                              edge="end"
-                              aria-label="comments"
-                              onClick={() => onCart(element?.name)}
-                            >
-                              <LocalBarOutlinedIcon />
-                            </IconButton>
+                            {myOrder?.dishId === element?.name ? (
+                              <IconButton
+                                edge="end"
+                                aria-label="comments"
+                                onClick={() => deleteOrder(element?.name)}
+                              >
+                                <DeleteForeverOutlinedIcon />
+                              </IconButton>
+                            ) : (
+                              <IconButton
+                                edge="end"
+                                aria-label="comments"
+                                onClick={() => addOrder(element?.name)}
+                              >
+                                <LocalBarOutlinedIcon />
+                              </IconButton>
+                            )}
                           </ListItemSecondaryAction>
                         </ListItem>
                       ))}

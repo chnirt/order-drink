@@ -74,6 +74,8 @@ function Row(props) {
   const [open, setOpen] = React.useState(false)
   const classes = useRowStyles()
 
+  // console.log(row.orders)
+
   return (
     <React.Fragment>
       <TableRow className={classes.root} component="th" scope="row">
@@ -108,6 +110,9 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.orders.map((orderRow, i) => {
+                    {
+                      /* console.log(orderRow) */
+                    }
                     return (
                       <TableRow key={i}>
                         <TableCell component="th" scope="row">
