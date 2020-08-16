@@ -12,6 +12,7 @@
 		"server": "cd server && yarn start",
 		"start": "concurrently \"yarn server\" \"yarn client\"",
 		"start:lite": "concurrently \"yarn client:build\" \"yarn server\"",
+		"heroku-postbuild": "cd server && yarn",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
