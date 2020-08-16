@@ -1,4 +1,5 @@
 module.exports = {
-	PORT: 8083,
-	SALT: 10
+	PORT: 8082,
+	SALT: 10,
+	HOST: '/'
 }

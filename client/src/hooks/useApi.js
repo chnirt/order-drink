@@ -125,6 +125,7 @@ export function useApi(url) {
 
   const onPost = async (data) => {
     try {
+      console.log(url)
       const response = await api.post(url, data)
       enqueueSnackbar('Successful', {
         variant: VariantEnum.SUCCESS,
