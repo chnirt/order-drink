@@ -1,4 +1,4 @@
 module.exports = {
-	PORT: 8082,
+	PORT: 8083,
 	SALT: 10
 }
