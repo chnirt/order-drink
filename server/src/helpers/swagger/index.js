@@ -1,6 +1,6 @@
 const swaggerJSDoc = require('swagger-jsdoc')
 
-const { host } = require('../../constants')
+const { HOST } = require('../../constants')
 
 const swaggerDefinition = {
 	swagger: '2.0',
@@ -17,7 +17,7 @@ const swaggerDefinition = {
 			url: 'https://opensource.org/licenses/MIT'
 		}
 	},
-	host,
+	HOST,
 	basePath: '/',
 	tags: [
 		{
@@ -45,8 +45,10 @@ const swaggerDefinition = {
 			}
 		}
 	],
-	// schemes: ['https', 'http'],
-	schemes: ['http', 'https'],
+	schemes:
+		process.env.NODE_ENV === 'production'
+			? ['https', 'http']
+			: ['http', 'https'],
 	consumes: ['application/json'],
 	produces: ['application/json'],
 	securityDefinitions: {

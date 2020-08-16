@@ -19,6 +19,7 @@ export function useApi(url) {
 
   const token = localStorage.getItem('access-token')
 
+  console.log(url)
   const api = axios.create({
     baseURL: url,
     timeout: 5000,
@@ -125,8 +126,7 @@ export function useApi(url) {
 
   const onPost = async (data) => {
     try {
-      console.log(url)
-      const response = await api.post(url, data)
+      const response = await api.post(null, data)
       enqueueSnackbar('Successful', {
         variant: VariantEnum.SUCCESS,
         action: (key) => (

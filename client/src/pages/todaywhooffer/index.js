@@ -252,13 +252,13 @@ export default function TodayWhoOffer() {
           />
         </div>
 
-        <button
+        {/* <button
           onClick={() => {
             refreshInvitation()
           }}
         >
           refersh
-        </button>
+        </button> */}
 
         <div style={{ display: 'flex', paddingTop: 10 }}>
           <Grid container spacing={3}>

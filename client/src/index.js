@@ -12,8 +12,6 @@ import { TodoProvider } from './context/useTodo'
 import Loading from './components/Loading'
 import './i18n'
 
-console.log('asd', process.env.NODE_ENV, process.env.PORT)
-
 const rootElement = document.getElementById('root')
 ReactDOM.render(
   <React.StrictMode>
