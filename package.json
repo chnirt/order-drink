@@ -10,8 +10,8 @@
 		"client": "cd client && yarn start",
 		"client:build": "cd client && yarn build:lite",
 		"server": "cd server && yarn start",
-		"start": "concurrently \"yarn server\" \"yarn client\"",
-		"start:lite": "concurrently \"yarn client:build\" \"yarn server\"",
+		"start": "yarn server",
+		"start:lite": "concurrently \"yarn server\" \"yarn client\"",
 		"heroku-postbuild": "cd server && yarn",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
