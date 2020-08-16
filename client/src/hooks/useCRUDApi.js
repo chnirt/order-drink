@@ -20,6 +20,7 @@ export function useCRUDApi(url, skip, config) {
   })
 
   const refresh = () => {
+    console.log('REFRESH:')
     delete cache[url]
     setRefreshIndex(refreshIndex + 1)
   }
@@ -47,7 +48,7 @@ export function useCRUDApi(url, skip, config) {
             .then((r) => {
               if (!cancelled) {
                 // console.log(r.data)
-                cache[url] = r.data // set response in cache;
+                // cache[url] = r.data // set response in cache;
                 setData(r.data)
               }
             })

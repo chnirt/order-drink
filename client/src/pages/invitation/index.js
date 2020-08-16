@@ -28,6 +28,7 @@ import { nanoId } from '../../utils/nanoId'
 import { useCRUDApi } from '../../hooks/useCRUDApi'
 import { invitationsResponse, invitationRequest } from '../../dto/invitation'
 import { variable } from '../../constants'
+import { useSocket } from '../../context/useSocket'
 
 const useStyles = makeStyles((theme) => ({
   breadcrumb: {
@@ -60,6 +61,7 @@ export default function Invitation(props) {
     params: { mine: true, sortBy: '-createdAt' },
     responseDTO: invitationsResponse
   })
+  const { socketEmit } = useSocket()
 
   const [action, setAction] = useState(null)
   const [id, setId] = useState(null)
@@ -145,8 +147,12 @@ export default function Invitation(props) {
     handleSubmit()
   }
 
-  function handleDelete() {
-    onDelete(id)
+  async function handleDelete() {
+    const result = await onDelete(id)
+    socketEmit('onChangeInvitation')
+    if (result) {
+      console.log('delete with socket')
+    }
     onClose()
   }
 
@@ -170,12 +176,17 @@ export default function Invitation(props) {
     validationSchema: createInvitationSchema,
     onSubmit: async (values) => {
       // alert(JSON.stringify(values, null, 2))
+      let result
       if (id) {
-        onPatch(id, values)
+        result = await onPatch(id, values)
       } else {
-        onPost(values, {
+        result = await onPost(values, {
           requestDTO: invitationRequest
         })
+      }
+      socketEmit('onChangeInvitation')
+      if (result) {
+        console.log('add with socket')
       }
       onClose()
     }

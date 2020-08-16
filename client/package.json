@@ -32,7 +32,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "build:lite": "react-scripts build && mv build ../server/src/build"
+    "build:lite": "react-scripts build && rm -rf ../server/src/build && mv build ../server/src"
   },
   "browserslist": [
     ">0.2%",

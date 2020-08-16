@@ -34,13 +34,13 @@ ReactDOM.render(
         <I18nProvider>
           <Suspense fallback={<Loading />}>
             <BrowserRouter basename="/🥤">
-              <SocketProvider>
-                <AuthProvider>
+              <AuthProvider>
+                <SocketProvider>
                   <TodoProvider>
                     <App />
                   </TodoProvider>
-                </AuthProvider>
-              </SocketProvider>
+                </SocketProvider>
+              </AuthProvider>
             </BrowserRouter>
           </Suspense>
         </I18nProvider>

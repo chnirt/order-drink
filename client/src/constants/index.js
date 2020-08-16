@@ -1,5 +1,5 @@
 export const variable = {
   shade: 400,
-  url: 'http://192.168.1.72:8082'
-  // url: 'https://ktcux.sse.codesandbox.io'
+  url: 'http://localhost:8082'
+  // url: 'http://172.16.1.193:8082',
 }

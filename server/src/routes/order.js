@@ -169,32 +169,40 @@ router.post('/', checkAuth, async (req, res, next) => {
 			})
 		}
 
-		var start = new Date()
-		start.setHours(0, 0, 0, 0)
+		// var start = new Date()
+		// start.setHours(0, 0, 0, 0)
 
-		var end = new Date()
-		end.setHours(23, 59, 59, 999)
+		// var end = new Date()
+		// end.setHours(23, 59, 59, 999)
 
-		const booked = await Order.findOne({
-			invitation,
-			orderer: _id,
-			createdAt: { $gte: start, $lt: end }
-		})
+		// const booked = await Order.findOne({
+		// 	invitation,
+		// 	orderer: _id,
+		// 	createdAt: { $gte: start, $lt: end }
+		// })
 
-		if (booked) {
-			return res.status(403).json({
-				message: 'You booked today'
-			})
-		}
+		// if (booked) {
+		// 	return res.status(403).json({
+		// 		message: 'You booked today'
+		// 	})
+		// }
 
-		const newOrder = new Order({
-			dishId,
-			invitation,
-			quantity,
-			orderer: _id
-		})
+		// const newOrder = new Order({
+		// 	dishId,
+		// 	invitation,
+		// 	quantity,
+		// 	orderer: _id
+		// })
 
-		const createdOrder = await newOrder.save()
+		// // create
+		// const createdOrder = await newOrder.save()
+
+		// upsert
+		const createdOrder = await Order.findOneAndUpdate(
+			{ invitation, orderer: _id },
+			{ $set: { dishId, invitation, quantity, orderer: _id } },
+			{ upsert: true, new: true }
+		)
 
 		await Invitation.findOneAndUpdate(
 			{ _id: invitation },

@@ -13,9 +13,9 @@ const path = require('path')
 
 require('dotenv').config()
 
-const { notFound, errorHandler, checkAuth } = require('./middlewares')
+const { notFound, errorHandler } = require('./middlewares')
 const { swaggerSpec, mongoose } = require('./helpers')
-const { port, host } = require('./constants')
+const { port } = require('./constants')
 const { verifyToken } = require('./utils')
 
 const userRoute = require('./routes/user')
@@ -65,7 +65,7 @@ app.use('/invitations', invitationRoute)
 app.use('/orders', orderRoute)
 
 app.use(express.static(path.join(__dirname, 'build')))
-app.get('/', function (req, res) {
+app.get('/*', function (req, res) {
 	res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
@@ -80,12 +80,14 @@ mongoose.connection.once('open', () =>
 	console.log('🌨  Connected successfully to mongodb database')
 )
 
-let messages = []
-let rooms = [{ id: 1, messages: ['Hello Socket.IO'] }]
-
 // create io
 io.use(async (socket, next) => {
-	if (socket.handshake.query && socket.handshake.query.token) {
+	const {
+		handshake: {
+			query: { token }
+		}
+	} = socket
+	if (token) {
 		try {
 			const token = socket.handshake.query.token
 
@@ -100,11 +102,11 @@ io.use(async (socket, next) => {
 	}
 }).on('connection', (socket) => {
 	console.log(`🔗  ${socket.id} connected`)
-	socket.on('joined room', (roomId) => {
+	socket.on('joinedRoom', (roomId) => {
 		socket.join(roomId)
 
-		// send other members
-		socket.broadcast.to(roomId).emit('joined room', `${socket.id} joined room`)
+		// send other members in room except sender
+		socket.broadcast.to(roomId).emit('joinedRoom', `${socket.id} joined room`)
 	})
 
 	socket.on('addOrder', async ({ roomId, data }) => {
@@ -207,6 +209,11 @@ io.use(async (socket, next) => {
 
 		// send to members in room
 		io.sockets.to(roomId).emit('report', report)
+	})
+
+	socket.on('onChangeInvitation', () => {
+		// send all client connect
+		io.emit('onChangeInvitation', true)
 	})
 
 	socket.on('disconnect', (reason) => {

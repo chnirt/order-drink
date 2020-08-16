@@ -63,19 +63,14 @@ export default function Order() {
   const token = localStorage.getItem('access-token')
 
   useEffect(() => {
-    socketEmit('joined room', invitationId)
+    socketEmit('joinedRoom', invitationId)
 
-    // socketOn('allMessages', (data) => {
-    //   console.log(data)
-    //   setMessages((s) => [...data, ...s])
-    // })
-
-    socketOn('joined room', (data) => {
-      console.log('joined room:', data)
+    socketOn('joinedRoom', (data) => {
+      // console.log('joined room:', data)
     })
 
     socketOn('report', (data) => {
-      console.log('report: ', data)
+      // console.log('report: ', data)
       const orders = data?.[0].orders
       setOrders(orders)
     })
@@ -145,10 +140,10 @@ export default function Order() {
     setLoading(false)
   }
 
-  async function deleteOrder(id) {
+  async function deleteOrder(name) {
     setLoading(true)
     const response = await axios.get(`${variable.url}/orders`, {
-      params: { mine: true, invitationId, dishId: id },
+      params: { mine: true, invitationId, dishId: name },
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -163,7 +158,7 @@ export default function Order() {
         setMyOrder({})
         socketEmit('deleteOrder', {
           roomId: invitationId,
-          data: id
+          data: name
         })
       }
       setLoading(false)

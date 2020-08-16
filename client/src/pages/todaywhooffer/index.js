@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import {
   Grid,
@@ -26,6 +26,7 @@ import { invitationsResponse } from '../../dto/invitation'
 import { variable } from '../../constants'
 import { useCRUDApi } from '../../hooks/useCRUDApi'
 import MyBackdrop from '../../components/MyBackdrop'
+import { useSocket } from '../../context/useSocket'
 
 const useStyles = makeStyles((theme) => ({
   breadcrumb: {
@@ -134,17 +135,27 @@ export default function TodayWhoOffer() {
   const theme = useTheme()
   const { pathname } = useLocation()
   let { push } = useHistory()
-
-  let { data, loading: loadingInvitation } = useCRUDApi(
-    `${variable.url}/invitations`,
-    null,
-    {
-      params: { isPublic: true, sortBy: '-createdAt' },
-      responseDTO: invitationsResponse
-    }
-  )
+  let {
+    data,
+    loading: loadingInvitation,
+    refresh: refreshInvitation
+  } = useCRUDApi(`${variable.url}/invitations`, null, {
+    params: { isPublic: true, sortBy: '-createdAt' },
+    responseDTO: invitationsResponse
+  })
+  const { socketOn } = useSocket()
 
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    socketOn('onChangeInvitation', (data) => {
+      if (data) {
+        console.log('true')
+        refreshInvitation()
+      }
+      console.log('false')
+    })
+  }, [])
 
   async function handleJoinInvitation(element) {
     const { id } = element
@@ -240,6 +251,14 @@ export default function TodayWhoOffer() {
             inputProps={{ 'aria-label': 'search' }}
           />
         </div>
+
+        <button
+          onClick={() => {
+            refreshInvitation()
+          }}
+        >
+          refersh
+        </button>
 
         <div style={{ display: 'flex', paddingTop: 10 }}>
           <Grid container spacing={3}>
