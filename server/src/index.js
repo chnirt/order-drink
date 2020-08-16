@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
-// const http = require('http').createServer(app)
-// const io = require('socket.io')(http)
+const http = require('http').createServer(app)
+const io = require('socket.io')(http)
 const logger = require('morgan')
 // const helmet = require('helmet')
 const cors = require('cors')
@@ -76,162 +76,162 @@ app.use(errorHandler)
 
 // connected mongo database
 mongoose.connection.on('error', () => {
-	console.log('❌  error occurred from the mongodb database')
+	console.log('❌  error occurred from the mongo database')
 })
 mongoose.connection.once('open', () =>
-	console.log('🌨  Connected successfully to mongodb database')
+	console.log('🌨  Connected successfully to mongo database')
 )
 
 // create io
-// io.use(async (socket, next) => {
-// 	const {
-// 		handshake: {
-// 			query: { token }
-// 		}
-// 	} = socket
-// 	if (token) {
-// 		try {
-// 			const token = socket.handshake.query.token
+io.use(async (socket, next) => {
+	const {
+		handshake: {
+			query: { token }
+		}
+	} = socket
+	if (token) {
+		try {
+			const token = socket.handshake.query.token
 
-// 			const decoded = await verifyToken(token, 'accessToken')
-// 			socket.decoded = decoded
-// 			next()
-// 		} catch (error) {
-// 			next(new Error('Authentication error'))
-// 		}
-// 	} else {
-// 		next(new Error('Authentication error'))
-// 	}
-// }).on('connection', (socket) => {
-// 	console.log(`🔗  ${socket.id} connected`)
-// 	socket.on('joinedRoom', (roomId) => {
-// 		socket.join(roomId)
+			const decoded = await verifyToken(token, 'accessToken')
+			socket.decoded = decoded
+			next()
+		} catch (error) {
+			next(new Error('Authentication error'))
+		}
+	} else {
+		next(new Error('Authentication error'))
+	}
+}).on('connection', (socket) => {
+	console.log(`🔗  ${socket.id} connected`)
+	socket.on('joinedRoom', (roomId) => {
+		socket.join(roomId)
 
-// 		// send other members in room except sender
-// 		socket.broadcast.to(roomId).emit('joinedRoom', `${socket.id} joined room`)
-// 	})
+		// send other members in room except sender
+		socket.broadcast.to(roomId).emit('joinedRoom', `${socket.id} joined room`)
+	})
 
-// 	socket.on('addOrder', async ({ roomId, data }) => {
-// 		console.log('addOrder', roomId, data)
+	socket.on('addOrder', async ({ roomId, data }) => {
+		console.log('addOrder', roomId, data)
 
-// 		const report = await Invitation.aggregate([
-// 			{
-// 				$match: { _id: mongoose.Types.ObjectId(roomId) }
-// 			},
-// 			{
-// 				$lookup: {
-// 					// from: 'orders',
-// 					// localField: 'orders',
-// 					// foreignField: '_id',
-// 					// as: 'orders',
+		const report = await Invitation.aggregate([
+			{
+				$match: { _id: mongoose.Types.ObjectId(roomId) }
+			},
+			{
+				$lookup: {
+					// from: 'orders',
+					// localField: 'orders',
+					// foreignField: '_id',
+					// as: 'orders',
 
-// 					from: 'orders',
-// 					let: { orderId: '$orders' },
-// 					pipeline: [
-// 						{ $match: { $expr: { $in: ['$_id', '$$orderId'] } } },
-// 						{
-// 							$lookup: {
-// 								from: 'users',
-// 								localField: 'orderer',
-// 								foreignField: '_id',
-// 								as: 'orderer'
-// 							}
-// 						},
-// 						{ $unwind: '$orderer' },
-// 						{
-// 							$group: {
-// 								_id: '$dishId',
-// 								orders: {
-// 									$addToSet: '$orderer'
-// 								},
-// 								count: { $sum: '$quantity' }
-// 							}
-// 						}
-// 					],
-// 					as: 'orders'
-// 				}
-// 			},
-// 			{
-// 				$addFields: {
-// 					total: { $sum: '$orders.count' }
-// 				}
-// 			}
-// 		])
+					from: 'orders',
+					let: { orderId: '$orders' },
+					pipeline: [
+						{ $match: { $expr: { $in: ['$_id', '$$orderId'] } } },
+						{
+							$lookup: {
+								from: 'users',
+								localField: 'orderer',
+								foreignField: '_id',
+								as: 'orderer'
+							}
+						},
+						{ $unwind: '$orderer' },
+						{
+							$group: {
+								_id: '$dishId',
+								orders: {
+									$addToSet: '$orderer'
+								},
+								count: { $sum: '$quantity' }
+							}
+						}
+					],
+					as: 'orders'
+				}
+			},
+			{
+				$addFields: {
+					total: { $sum: '$orders.count' }
+				}
+			}
+		])
 
-// 		// send to members in room
-// 		io.sockets.to(roomId).emit('report', report)
-// 	})
+		// send to members in room
+		io.sockets.to(roomId).emit('report', report)
+	})
 
-// 	socket.on('deleteOrder', async ({ roomId, data }) => {
-// 		console.log('deleteOrder', roomId, data)
+	socket.on('deleteOrder', async ({ roomId, data }) => {
+		console.log('deleteOrder', roomId, data)
 
-// 		const report = await Invitation.aggregate([
-// 			{
-// 				$match: { _id: mongoose.Types.ObjectId(roomId) }
-// 			},
-// 			{
-// 				$lookup: {
-// 					// from: 'orders',
-// 					// localField: 'orders',
-// 					// foreignField: '_id',
-// 					// as: 'orders',
+		const report = await Invitation.aggregate([
+			{
+				$match: { _id: mongoose.Types.ObjectId(roomId) }
+			},
+			{
+				$lookup: {
+					// from: 'orders',
+					// localField: 'orders',
+					// foreignField: '_id',
+					// as: 'orders',
 
-// 					from: 'orders',
-// 					let: { orderId: '$orders' },
-// 					pipeline: [
-// 						{ $match: { $expr: { $in: ['$_id', '$$orderId'] } } },
-// 						{
-// 							$lookup: {
-// 								from: 'users',
-// 								localField: 'orderer',
-// 								foreignField: '_id',
-// 								as: 'orderer'
-// 							}
-// 						},
-// 						{ $unwind: '$orderer' },
-// 						{
-// 							$group: {
-// 								_id: '$dishId',
-// 								orders: {
-// 									$addToSet: '$orderer'
-// 								},
-// 								count: { $sum: '$quantity' }
-// 							}
-// 						}
-// 					],
-// 					as: 'orders'
-// 				}
-// 			},
-// 			{
-// 				$addFields: {
-// 					total: { $sum: '$orders.count' }
-// 				}
-// 			}
-// 		])
+					from: 'orders',
+					let: { orderId: '$orders' },
+					pipeline: [
+						{ $match: { $expr: { $in: ['$_id', '$$orderId'] } } },
+						{
+							$lookup: {
+								from: 'users',
+								localField: 'orderer',
+								foreignField: '_id',
+								as: 'orderer'
+							}
+						},
+						{ $unwind: '$orderer' },
+						{
+							$group: {
+								_id: '$dishId',
+								orders: {
+									$addToSet: '$orderer'
+								},
+								count: { $sum: '$quantity' }
+							}
+						}
+					],
+					as: 'orders'
+				}
+			},
+			{
+				$addFields: {
+					total: { $sum: '$orders.count' }
+				}
+			}
+		])
 
-// 		// send to members in room
-// 		io.sockets.to(roomId).emit('report', report)
-// 	})
+		// send to members in room
+		io.sockets.to(roomId).emit('report', report)
+	})
 
-// 	socket.on('onChangeInvitation', () => {
-// 		// send all client connect
-// 		io.emit('onChangeInvitation', true)
-// 	})
+	socket.on('onChangeInvitation', () => {
+		// send all client connect
+		io.emit('onChangeInvitation', true)
+	})
 
-// 	socket.on('disconnect', (reason) => {
-// 		if (reason === 'io server disconnect') {
-// 			// the disconnection was initiated by the server, you need to reconnect manually
-// 			socket.connect()
-// 		}
-// 		// else the socket will automatically try to reconnect
-// 	})
-// })
+	socket.on('disconnect', (reason) => {
+		if (reason === 'io server disconnect') {
+			// the disconnection was initiated by the server, you need to reconnect manually
+			socket.connect()
+		}
+		// else the socket will automatically try to reconnect
+	})
+})
 
 //create a server object:
-app.listen(process.env.PORT || 3000, function () {
+http.listen(port, function () {
 	console.log(
 		'👻  Express server listening on port %d in %s mode',
-		this.address().port,
+		port,
 		app.settings.env
 	)
 })
