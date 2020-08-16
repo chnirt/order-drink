@@ -3,6 +3,9 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
+	"engines": {
+		"node": "14.4.x"
+	},
 	"scripts": {
 		"client": "cd client && yarn start",
 		"client:build": "cd client && yarn build:lite",

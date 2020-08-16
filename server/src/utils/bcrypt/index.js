@@ -1,6 +1,6 @@
 const { hash, compare } = require('bcrypt')
 
-const { salt } = require('../../constants')
+const { SALT } = require('../../constants')
 
 /**
  * Returns hashed password by hash password.
@@ -14,7 +14,7 @@ const { salt } = require('../../constants')
  * @beta
  */
 const hashPassword = async (password) => {
-	return await hash(password, salt)
+	return await hash(password, SALT)
 }
 
 /**

@@ -2,21 +2,6 @@ const { sign, verify } = require('jsonwebtoken')
 
 const { User } = require('../../models')
 
-// let users = [
-// 	{
-// 		_id: 1,
-// 		username: 'admin',
-// 		password: '$2b$10$fTIcNNKUaZ4IOch5GUZp0eMXx.3/Y9F/xHv4SdjBMQzcZ6H.gbige',
-// 		isAdmin: true
-// 	},
-// 	{
-// 		_id: 2,
-// 		username: 'member',
-// 		password: '$2b$10$fTIcNNKUaZ4IOch5GUZp0eMXx.3/Y9F/xHv4SdjBMQzcZ6H.gbige',
-// 		isAdmin: false
-// 	}
-// ]
-
 const tokenType = {
 	accessToken: {
 		privateKey: process.env.ACCESS_TOKEN_KEY,
@@ -92,7 +77,7 @@ const verifyToken = async (token, type) => {
  *
  * @beta
  */
-const tradeToken = async user => {
+const tradeToken = async (user) => {
 	const accessToken = await generateToken(user, 'accessToken')
 	const refreshToken = await generateToken(user, 'refreshToken')
 

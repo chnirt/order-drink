@@ -15,7 +15,7 @@ require('dotenv').config()
 
 const { notFound, errorHandler } = require('./middlewares')
 const { swaggerSpec, mongoose } = require('./helpers')
-const { port } = require('./constants')
+const { PORT } = require('./constants')
 const { verifyToken } = require('./utils')
 
 const userRoute = require('./routes/user')
@@ -23,6 +23,8 @@ const invitationRoute = require('./routes/invitation')
 const orderRoute = require('./routes/order')
 
 const { Invitation } = require('./models')
+
+const port = process.env.PORT || PORT
 
 var conString = process.env.PG_URL //Can be found in the Details page
 var client = new pg.Client(conString)
